@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Modern Quotmarks Replacer
  * Description:       Disables wptexturize so quotation marks, dashes and ellipses stay as typed in every WordPress output: content, titles, comments, feeds, REST and the admin.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 7.0
  * Tested up to:      7.1
  * Requires PHP:      8.4
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.1.0
  */
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 
 \define( 'MQMR_VERSION', VERSION );
 \define( 'MQMR_FILE', __FILE__ );
