@@ -2,10 +2,10 @@
 /**
  * Plugin Name:       Modern Quotmarks Replacer
  * Description:       Disables wptexturize so quotation marks, dashes and ellipses stay as typed in every WordPress output: content, titles, comments, feeds, REST and the admin.
- * Version:           1.1.3
+ * Version:           1.1.5
  * Requires at least: 7.0
  * Tested up to:      7.1
- * Requires PHP:      8.4
+ * Requires PHP:      8.0
  * Author:            Gnostis
  * Author URI:        https://github.com/Gnoztis
  * License:           GPL-2.0-or-later
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.1.0
  */
-const VERSION = '1.1.3';
+const VERSION = '1.1.5';
 
 \define( 'MQMR_VERSION', VERSION );
 \define( 'MQMR_FILE', __FILE__ );
@@ -45,6 +45,10 @@ const VERSION = '1.1.3';
  * `run_wptexturize` switch, which covers every hook and every direct call,
  * and the historical per-hook detach pass kept for compatibility with the
  * `mqmr_target_filters` filter and with code that inspects `has_filter()`.
+ *
+ * The global layer can be turned off with the `mqmr_global_wptexturize`
+ * filter; then only the per-hook list runs and hooks outside it keep their
+ * typography (selective mode).
  *
  * @since 1.0.0
  */
@@ -139,10 +143,10 @@ final class Plugin {
 	/**
 	 * Register WordPress hooks.
 	 *
-	 * The global `run_wptexturize` switch is added immediately, while the
-	 * plugin file is being included. `wptexturize()` applies that filter only
-	 * on its first call in a request and caches the result, so a switch added
-	 * later would be ignored if anything has already produced text.
+	 * The global `run_wptexturize` callback is registered immediately, while
+	 * the plugin file is being included. `wptexturize()` applies that filter
+	 * only on its first call in a request and caches the result, so a switch
+	 * added later would be ignored if anything has already produced text.
 	 *
 	 * The per-hook detach pass stays on `init` at PHP_INT_MAX, by which time
 	 * core, themes and plugins have registered their callbacks.
@@ -151,9 +155,10 @@ final class Plugin {
 	 */
 	public function register(): void {
 		// Global switch: every wptexturize() call returns the text unchanged,
-		// whatever hook or direct call triggered it. PHP_INT_MAX runs last, so
-		// a third-party callback cannot turn the typography back on.
-		\add_filter( 'run_wptexturize', '__return_false', PHP_INT_MAX );
+		// whatever hook or direct call triggered it. The callback is added at
+		// load time, but it reads mqmr_global_wptexturize on the first
+		// wptexturize() call, so a filter from functions.php still applies.
+		\add_filter( 'run_wptexturize', [ $this, 'global_wptexturize' ], PHP_INT_MAX );
 
 		\add_action( 'init', [ $this, 'disable_wptexturize' ], PHP_INT_MAX );
 
@@ -164,13 +169,39 @@ final class Plugin {
 	}
 
 	/**
+	 * Value for the global `run_wptexturize` switch.
+	 *
+	 * Default: typography is disabled everywhere. A site that needs selective
+	 * typography returns false from `mqmr_global_wptexturize`; then the global
+	 * switch stays out of the way and only the per-hook list is detached, so
+	 * hooks outside the list keep `wptexturize` — the 1.0.0 behaviour.
+	 *
+	 * The decision is made on the first `wptexturize()` call of the request:
+	 * WordPress caches the `run_wptexturize` result, and by then a filter
+	 * added from functions.php (loaded after plugins) is already registered.
+	 *
+	 * @since 1.1.4
+	 *
+	 * @param bool $enabled Incoming value from `wptexturize()`; true by default.
+	 * @return bool False disables typography everywhere, the incoming value
+	 *              keeps it on the hooks outside the per-hook list.
+	 */
+	public function global_wptexturize( $enabled ): bool {
+		$disable = (bool) \apply_filters( 'mqmr_global_wptexturize', true );
+
+		return $disable ? false : (bool) $enabled;
+	}
+
+	/**
 	 * Detach `wptexturize` from every targeted filter.
 	 *
-	 * This is the compatibility layer behind `mqmr_target_filters`, not the
-	 * guarantee: the global `run_wptexturize` switch in {@see Plugin::register()}
-	 * already makes every `wptexturize()` call a no-op. Detaching is kept so
-	 * that site code inspecting `has_filter()` keeps seeing the expected state
-	 * and so that the filter can still extend the list.
+	 * This is the compatibility layer behind `mqmr_target_filters`. With the
+	 * default global mode it is redundant for behaviour — the
+	 * `run_wptexturize` switch in {@see Plugin::register()} already makes
+	 * every `wptexturize()` call a no-op — but it keeps custom hooks detached
+	 * and makes `has_filter()` report the expected state. When a site returns
+	 * false from `mqmr_global_wptexturize`, this list is the only thing that
+	 * runs, so hooks outside it keep their typography.
 	 *
 	 * @since 1.0.0
 	 */
@@ -243,9 +274,15 @@ final class Plugin {
 	/**
 	 * Prevent unserialization of the singleton.
 	 *
+	 * __wakeup() is soft-deprecated in PHP 8.5; __unserialize() is the
+	 * supported replacement and keeps the same guard.
+	 *
 	 * @since 1.0.0
+	 *
+	 * @param array<string, mixed> $data Serialized data.
 	 */
-	public function __wakeup() {
+	public function __unserialize( array $data ): void {
+		unset( $data );
 		\_doing_it_wrong( __FUNCTION__, \esc_html__( 'Singleton cannot be unserialized.', 'modern-quotmarks-replacer' ), '1.0.0' );
 	}
 }
