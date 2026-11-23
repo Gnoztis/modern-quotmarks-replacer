@@ -3,7 +3,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Modern Quotmarks Replacer 1.1.1\n"
+"Project-Id-Version: Modern Quotmarks Replacer 1.1.2\n"
 "Report-Msgid-Bugs-To: https://github.com/Gnoztis/modern-quotmarks-replacer/issues\n"
 "POT-Creation-Date: 2026-11-23T00:00:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -15,25 +15,75 @@ msgstr ""
 "X-Generator: manual\n"
 "X-Domain: modern-quotmarks-replacer\n"
 
-#: modern-quotmarks-replacer.php:236
+#: modern-quotmarks-replacer.php:240
 msgid "Singleton cannot be cloned."
 msgstr ""
 
-#: modern-quotmarks-replacer.php:245
+#: modern-quotmarks-replacer.php:249
 msgid "Singleton cannot be unserialized."
 msgstr ""
 
-#: includes/class-mqmr-github-updater.php:339
-msgid ""
-"Отключает типографику WordPress (wptexturize): кавычки, тире и многоточия "
-"остаются в том виде, в каком набраны, во всех местах вывода — записи, "
-"заголовки, комментарии, фиды, REST и админка."
+#: includes/class-mqmr-github-updater.php:315
+msgid "Disables wptexturize so quotation marks, dashes and ellipses stay as typed in every WordPress output: content, titles, comments, feeds, REST and the admin."
 msgstr ""
 
-#: includes/class-mqmr-github-updater.php:340
+#: includes/class-mqmr-github-updater.php:316
 msgid "Описание изменений в релизе не заполнено."
 msgstr ""
 
-#: includes/class-mqmr-github-updater.php:453
+#: includes/class-mqmr-github-updater.php:516
 msgid "Проверить обновления"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:544
+msgid "Modern Quotmarks Replacer: проверка обновлений не удалась."
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:956
+msgid "лимит GitHub API"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:957
+msgid "репозиторий или тег не найдены"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:958
+msgid "токен отклонён"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:959
+msgid "нет связи с GitHub"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:960
+msgid "неожиданный ответ GitHub"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:961
+msgid "неизвестная ошибка"
+msgstr ""
+
+#. translators: 1: HTTP status or a dash, 2: failure reason
+#: includes/class-mqmr-github-updater.php:969
+msgid "проверка не удалась: %1$s (%2$s)"
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:983
+msgid "Задайте MQMR_GITHUB_TOKEN в wp-config.php: без токена GitHub разрешает 60 запросов в час на IP, с токеном — 5000."
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:985
+msgid "Проверьте, что тег вида vX.Y.Z существует в репозитории и репозиторий доступен без авторизации."
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:987
+msgid "Проверьте MQMR_GITHUB_TOKEN: токен должен иметь доступ на чтение публичного репозитория."
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:989
+msgid "Хостинг не смог открыть api.github.com: проверьте исходящие запросы и DNS."
+msgstr ""
+
+#: includes/class-mqmr-github-updater.php:991
+msgid "Повторите проверку позже; если ошибка повторяется, посмотрите ответ api.github.com."
 msgstr ""
